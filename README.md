@@ -46,11 +46,11 @@ Root
 
 1. Clona la repository:
    ```bash
-   git clone https://github.com/tuo-username/nome-repo.git
+   git clone https://github.com/NS-Projects-Unina/CachePoisoning_DNSSEC.git
    ```
 2. Entra nella cartella del progetto:
    ```bash
-   cd nome-repo/progetto-ns
+   cd progetto-ns
    ```
 3. Avvia l'infrastruttura in background:
    ```bash
