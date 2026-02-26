@@ -1,0 +1,9 @@
+<group name="bind, dns_update">
+  <rule id="100010" level="12">
+    <match>update</match>
+    <description>CRITICAL ALERT: Modifica non autorizzata rilevata sulla zona DNS (Dynamic Update tramite Proxy)</description>
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+  </rule>
+</group>

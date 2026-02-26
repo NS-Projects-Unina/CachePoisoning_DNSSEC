@@ -1,0 +1,21 @@
+logging {
+    channel query_log {
+        file "/var/log/named/query.log" versions 3 size 5m;
+        severity debug 3;        
+        print-time yes;
+        print-category yes;
+        print-severity yes;
+    };
+
+    category queries { query_log; };
+    category update { query_log; };
+};
+
+options {
+    directory "/var/cache/bind";
+    listen-on { any; };          
+    allow-query { any; };         
+    recursion yes;                 
+    dnssec-validation auto;
+};
+

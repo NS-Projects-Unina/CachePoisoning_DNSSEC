@@ -1,0 +1,12 @@
+key "tsig-update" {
+        algorithm hmac-sha256;
+        secret "CxzmZ0nnbzWXnxGjcCuDycgJ6vIplu2Ammo4rEVSO1k=";
+};
+
+
+zone "progetto.ns" {
+    type slave;
+    masters { 10.0.1.53 key "tsig-update"; };
+    file "/var/cache/bind/db.progetto.ns";
+    allow-update-forwarding { key "tsig-update"; };
+};

@@ -1,0 +1,19 @@
+; This is the state of key 30011, for progetto.ns.
+Algorithm: 13
+Length: 256
+Lifetime: 0
+KSK: yes
+ZSK: yes
+Generated: 20260223202839 (Mon Feb 23 20:28:39 2026)
+Published: 20260223202839 (Mon Feb 23 20:28:39 2026)
+Active: 20260223202839 (Mon Feb 23 20:28:39 2026)
+PublishCDS: 20260224203339 (Tue Feb 24 20:33:39 2026)
+DNSKEYChange: 20260224051633 (Tue Feb 24 05:16:33 2026)
+ZRRSIGChange: 20260223202839 (Mon Feb 23 20:28:39 2026)
+KRRSIGChange: 20260224051633 (Tue Feb 24 05:16:33 2026)
+DSChange: 20260223202839 (Mon Feb 23 20:28:39 2026)
+DNSKEYState: omnipresent
+ZRRSIGState: rumoured
+KRRSIGState: omnipresent
+DSState: hidden
+GoalState: omnipresent

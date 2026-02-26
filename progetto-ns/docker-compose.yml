@@ -1,0 +1,147 @@
+networks:
+  frontend_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+  backend_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
+  mgmt_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.1.0/24
+
+services:
+  # DNS Server (BIND9) 
+  bind9:
+    image: ubuntu/bind9
+    container_name: bind9_server
+    entrypoint: ["/usr/sbin/named", "-u", "bind", "-f"]
+    cap_add:
+      - NET_ADMIN
+    networks:
+#      frontend_net:
+#        ipv4_address: 172.20.0.53
+      mgmt_net:
+        ipv4_address: 10.0.1.53
+#    ports:
+#      - "53:53/udp"
+#      - "53:53/tcp"
+    volumes:
+      - ./bind/config:/etc/bind
+      - ./bind/zones:/var/lib/bind
+      - ./bind/log:/var/log/named 
+    restart: always
+
+  # Wazuh Manager 
+  wazuh_manager:
+    image: wazuh/wazuh-manager:4.7.2
+    container_name: wazuh_manager
+    hostname: wazuh.manager
+    networks:
+      mgmt_net:
+        ipv4_address: 10.0.1.10
+    mem_limit: 8g
+    environment:
+      - INDEXER_URL=http://10.0.1.11:9200
+      - INDEXER_CERT_VALIDATION=no
+      - WAZUH_CERT_VALIDATION=no
+      - WAZUH_PROTOCOL=http      # <--- AGGIUNGI QUESTA
+      - FILEBEAT_TYPE_COMPATIBILITY=true  # <--- FORZA LA COMPATIBILITÀ
+    volumes:
+      - ./wazuh/config:/var/ossec/etc
+      - ./bind/log:/var/log/remote_bind:ro 
+      - ./resolver/log:/var/log/remote_resolver:ro
+    restart: always
+
+  # Wazuh Indexer 
+  wazuh_indexer:
+    image: wazuh/wazuh-indexer:4.7.2
+    container_name: wazuh_indexer
+    hostname: wazuh.indexer # <--- AGGIUNGI QUESTO
+    networks:
+      mgmt_net:
+        ipv4_address: 10.0.1.11
+        aliases:
+          - wazuh.indexer # <--- AGGIUNGI QUESTO ALIAS
+    environment:
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
+      - "discovery.type=single-node"
+      - "compatibility.override_main_response_version=true" # <--- AGGIUNGI QUESTA 
+      - "override_main_response_version=true" # <--- AGGIUNGI ANCHE QUESTA (Senza il prefisso compatibility)
+    restart: always
+
+  # Wazuh Dashboard
+  wazuh_dashboard:
+    image: wazuh/wazuh-dashboard:4.7.2
+    container_name: wazuh_dashboard
+    hostname: wazuh.dashboard
+    networks:
+      mgmt_net:
+        ipv4_address: 10.0.1.12
+    ports:
+      - "443:5601"
+    environment:
+      - WAZUH_MANAGER_URL=http://10.0.1.10:55000
+      - INDEXER_URL=http://10.0.1.11:9200
+      - INDEXER_CERT_VALIDATION=no
+      - WAZUH_CERT_VALIDATION=no
+      - opensearch_security.enabled=false
+      - opensearch.ssl.verificationMode=none # <--- AGGIUNGI QUESTA
+      - opensearch.hosts=["http://10.0.1.11:9200"] #
+      - SERVER_SSL_ENABLED=false           # <--- AGGIUNGI QUESTA
+      - OPENSEARCH_SSL_VERIFICATIONMODE=none # <--- AGGIUNGI QUESTA
+    depends_on:
+      - wazuh_indexer
+    restart: always
+
+  # L'attaccante (Kali Linux)
+  attacker:
+    image: kalilinux/kali-rolling
+    container_name: kali_attacker
+    tty: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW    # <--- FONDAMENTALE PER LO SPOOFING IP
+    privileged: true
+    networks:
+      frontend_net:
+        ipv4_address: 172.20.0.100
+    volumes:
+      - ./attacker_scripts:/home/kali/scripts # Cartella per i nostri script Python
+    command: >
+      bash -c "apt-get update && apt-get install -y scapy iputils-ping dnsutils python3 && sleep infinity"
+
+  # Il Sito Clone (Nginx)
+  web_clone:
+    image: nginx:alpine
+    container_name: web_clone
+    networks:
+      frontend_net:
+        ipv4_address: 172.20.0.80
+    volumes:
+      - ./html_clone:/usr/share/nginx/html
+
+# DNS Resolver (BIND9 Ricorsivo)
+  bind9_resolver:
+    image: ubuntu/bind9
+    container_name: bind9_resolver
+    entrypoint: ["/usr/sbin/named", "-u", "bind", "-f"]
+    networks:
+      frontend_net:
+        ipv4_address: 172.20.0.53  # IP per il servizio e l'attacco
+      mgmt_net:
+        ipv4_address: 10.0.1.60    # IP per il piano di gestione
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    volumes:
+      - ./resolver/config:/etc/bind
+      - ./resolver/log:/var/log/named
+    restart: always
