@@ -58,7 +58,7 @@ Root
    ```
 
 Attendi qualche minuto affinché i container Wazuh completino il bootstrap.  
-La dashboard è raggiungibile su `https://localhost` (ignora l'avviso SSL autofirmato).
+La dashboard è raggiungibile su `https://localhost:443` (ignora l'avviso SSL autofirmato).
 
 > Tutti i comandi per replicare l'attacco, testare le vulnerabilità ed eseguire l'hardening sono documentati nel PDF allegato.
 
