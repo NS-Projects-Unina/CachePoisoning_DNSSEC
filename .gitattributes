@@ -1,9 +1,16 @@
-*.conf        linguist-language=Shell
-*.py          linguist-language=Python
-*.xml         linguist-language=XML
-*.yml         linguist-language=YAML
-*.yaml        linguist-language=YAML
+named.conf*           linguist-language=Shell
+named.conf.options    linguist-language=Shell
+named.conf.local      linguist-language=Shell
+db.*                  linguist-language=DNS Zone File
+*.zone                linguist-language=DNS Zone File
 
-zones/        linguist-vendored
-*.signed      linguist-vendored
-*.jnl         linguist-vendored
+*.jnl                 linguist-vendored
+*.signed              linguist-vendored
+*.key                 linguist-language=Shell
+
+Dockerfile*           linguist-language=Docker
+docker-compose.yml    linguist-language=YAML
+
+*.py                  linguist-language=Python
+*.sh                  linguist-language=Shell
+*.xml                 linguist-language=XML
