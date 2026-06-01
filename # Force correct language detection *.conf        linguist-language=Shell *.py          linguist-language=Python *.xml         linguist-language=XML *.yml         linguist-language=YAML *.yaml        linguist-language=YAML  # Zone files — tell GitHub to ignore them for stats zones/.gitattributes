@@ -1,9 +1,0 @@
-*.conf        linguist-language=Shell
-*.py          linguist-language=Python
-*.xml         linguist-language=XML
-*.yml         linguist-language=YAML
-*.yaml        linguist-language=YAML
-
-zones/        linguist-vendored
-*.signed      linguist-vendored
-*.jnl         linguist-vendored
