@@ -3,6 +3,7 @@ named.conf.options    linguist-language=Shell
 named.conf.local      linguist-language=Shell
 db.*                  linguist-language=DNS Zone File
 *.zone                linguist-language=DNS Zone File
+*.ns                  linguist-language=DNS Zone File
 
 *.jnl                 linguist-vendored
 *.signed              linguist-vendored
